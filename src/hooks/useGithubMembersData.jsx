@@ -1,4 +1,0 @@
-
-const useGithubMembersData = ({org, page}) => {
-
-};

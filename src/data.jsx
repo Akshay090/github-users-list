@@ -646,13 +646,22 @@ const payload = [
   },
 ];
 
-export const getDataByPage = (page) => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      const start = (page - 1) * 5;
-      const end = start + 5;
-      const data = payload.slice(start, end);
-      resolve(data);
-    }, 500);
-  });
+export const getDataByPage = ({ page, useMock = false }) => {
+  if (useMock) {
+    console.log("[info] Using mock data. Page number:", page);
+
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        const start = (page - 1) * 5;
+        const end = start + 5;
+        const data = payload.slice(start, end);
+        resolve(data);
+      }, 500);
+    });
+  }
+
+  console.log("[info] Fetching data from API. Page number:", page);
+  return fetch(`https://api.github.com/orgs/mozilla/members?page=${page}`).then(
+    (response) => response.json()
+  );
 };

@@ -1,14 +1,14 @@
-/* eslint-disable react/prop-types */
 import { useEffect, useState, useRef } from "react";
-import { AvatarCard, SkeletonAvatarCard } from "./components/AvatarCard";
 import useIntersectionObserver from "./hooks/useIntersectionObserver";
 import { getDataByPage } from "./data";
+import AvatarGrid from "./components/AvatarGrid";
 
 export default function App() {
   const [data, setData] = useState([]);
 
   const endOfPageRef = useRef(null);
 
+  // TODO - current way to detect end of page needs an extra element approach can be improved
   const isEndReached = useIntersectionObserver(endOfPageRef, {
     rootMargin: "0px 0px 200px 0px", // Trigger 200px before the element is visible
   });
@@ -22,14 +22,11 @@ export default function App() {
   }, [isEndReached]);
 
   useEffect(() => {
-    // fetch(`https://api.github.com/orgs/mozilla/members?page=${page}`)
-    //   .then((response) => response.json())
-    // .then((newData) => setData((prevData) => [...prevData, ...newData]));
-    // setData(payload);
-
-    console.log("data fetch page ", page);
     setIsLoading(true);
-    getDataByPage(page).then((newData) => {
+    getDataByPage({
+      page,
+      useMock: true,
+    }).then((newData) => {
       setData((prevData) => [...prevData, ...newData]);
       setIsLoading(false);
     });
@@ -38,15 +35,7 @@ export default function App() {
   return (
     <div>
       <h1 className="text-center my-4">Github Org Members</h1>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {data.map((userData, idx) => (
-          <AvatarCard key={idx} userData={userData} />
-        ))}
-        {isLoading && <SkeletonAvatarCard />}
-      </div>
-
-      <div ref={endOfPageRef} />
+      <AvatarGrid isLoading={isLoading} data={data}  endOfPageRef={endOfPageRef}/>
     </div>
   );
 }
